@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const LXPay = require('./lxpay');
+const crypto = require('crypto');
 
 const PORT = process.env.PORT || 3000;
 
@@ -14,6 +15,11 @@ app.use((req, res, next) => {
     );
     next();
 });
+
+// Função para gerar identifier único
+function generateUniqueIdentifier() {
+    return `PIX-${Date.now()}-${crypto.randomBytes(8).toString('hex')}`;
+}
 
 // Endpoint raiz
 app.get('/', (req, res) => {
@@ -44,11 +50,17 @@ app.post('/generate-pix', async (req, res) => {
         const pixData = req.body;
         
         // Validação básica dos dados
-        if (!pixData.amount || !pixData.client || !pixData.identifier) {
+        if (!pixData.amount || !pixData.client) {
             return res.status(400).json({
-                error: 'Campos obrigatórios faltando: amount, client, identifier'
+                error: 'Campos obrigatórios faltando: amount, client'
             });
         }
+
+        // SEMPRE gerar um novo identifier único
+        // Mesmo que o cliente envie um, vamos sobrescrever para garantir unicidade
+        pixData.identifier = generateUniqueIdentifier();
+
+        console.log(`Gerando PIX com identifier: ${pixData.identifier}`);
 
         const pixTransaction = await lxpay.createPixTransaction(pixData);
 
