@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  zaia-lxpay-bridge:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - LXPAY_PUBLIC_KEY=${LXPAY_PUBLIC_KEY}
+      - LXPAY_SECRET_KEY=${LXPAY_SECRET_KEY}
+      - PORT=3000
+      - NODE_ENV=production
+      - CALLBACK_URL=${CALLBACK_URL:-http://localhost:3000/webhook/payment-status}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - bridge-network
+
+networks:
+  bridge-network:
+    driver: bridge

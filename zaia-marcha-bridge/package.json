@@ -1,0 +1,18 @@
+{
+  "name": "zaia-marcha-bridge",
+  "version": "1.0.1",
+  "description": "Servidor de ponte para integrar Zaia IA com Marcha Pay",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "dotenv": "^16.0.3",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
